@@ -9,9 +9,6 @@ EXPOSE 32400 1900/udp 3005 5353/udp 8324 32410/udp 32412/udp 32413/udp 32414/udp
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-#COPY Install-ServerMediaFoundation.ps1 /
-#RUN & c:\Install-ServerMediaFoundation.ps1
-
 RUN Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
     choco install plexmediaserver --ignore-checksums -y ; \
     New-Item c:\media -type directory ; \
@@ -22,5 +19,5 @@ COPY bootstrap.ps1 /
 WORKDIR /ProgramData/PlexConfig
 ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
 
-# docker run --name plex -d -p 32400:32400 -v D:/DockerVolumes/AppFiles/pms-docker/config:C:/ProgramData/PlexConfig windowsserver-plex
-# docker run --name plex -it --entrypoint powershell.exe -p 32400:32400 -v D:/DockerVolumes/AppFiles/pms-docker/config:C:/ProgramData/PlexConfig windowsserver-plex
+# docker run --name plextest -d -p 32400:32400 -v D:/DockerVolumes/AppFiles/pms-docker/config:C:/ProgramData/PlexConfig windowsserver-plex
+# docker run --name plextest -it --entrypoint powershell.exe -p 32400:32400 -v D:/DockerVolumes/AppFiles/plex/config:C:/ProgramData/PlexConfig -v e:\media:c:\media\usb windowsserver-plex

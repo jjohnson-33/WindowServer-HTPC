@@ -15,7 +15,7 @@ services:
    - 32414:32414/udp
    - 32469:32469/tcp
   volumes:
-   - D:\DockerVolumes\AppFiles\pms-docker\config:C:\ProgramData\PlexConfig
+   - D:\DockerVolumes\AppFiles\plex\config:C:\ProgramData\PlexConfig
    - e:\media:c:\media\usb
    - D:\DockerVolumes\NasMedia:c:\media\nas
   image: jjohnson33/windowsserver-plex:latest
