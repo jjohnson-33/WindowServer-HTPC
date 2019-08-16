@@ -1,0 +1,64 @@
+version: '2.1'
+services:
+ plex:
+  container_name: plex
+  restart: unless-stopped
+  ports:
+   - 32400:32400/tcp
+   - 1900:1900/udp
+   - 3005:3005/tcp
+   #- 5353:5353/udp
+   - 8324:8324/tcp
+   - 32410:32410/udp
+   - 32412:32412/udp
+   - 32413:32413/udp
+   - 32414:32414/udp
+   - 32469:32469/tcp
+  volumes:
+   - D:\DockerVolumes\AppFiles\pms-docker\config:C:\ProgramData\PlexConfig
+   - e:\media:c:\media\usb
+   - D:\DockerVolumes\NasMedia:c:\media\nas
+  image: jjohnson33/windowsserver-plex:latest
+
+ radarr:
+  container_name: radarr
+  restart: unless-stopped
+  ports:
+   - 7878:7878
+  volumes:
+   - D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig
+   - e:\media:c:\media\usb
+   - D:\DockerVolumes\NasMedia:c:\media\nas
+  image: jjohnson33/windowsserver-radarr:latest
+
+ sonarr:
+  container_name: sonarr
+  restart: unless-stopped
+  ports:
+   - 8989:8989
+  volumes:
+   - D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig
+   - e:\media:c:\media\usb
+   - D:\DockerVolumes\NasMedia:c:\media\nas
+  image: jjohnson33/windowsserver-sonarr:latest
+ 
+ jackett:
+  container_name: jackett
+  restart: unless-stopped
+  ports:
+   - 9117:9117
+  volumes:
+   - D:/DockerVolumes/AppFiles/jackett:C:/ProgramData/JackettConfig
+  image: jjohnson33/windowsserver-jackett:latest
+  
+ qbittorrent:
+  container_name: qbittorrent
+  restart: unless-stopped
+  ports:
+   - 8080:8080
+  volumes:
+   - D:/DockerVolumes/AppFiles/qbittorent/config:C:/ProgramData/qBittorrent/config
+   - D:/DockerVolumes/Downloads:C:/ProgramData/qBittorrent/downloads
+   - e:\media:c:\media\usb
+   - D:\DockerVolumes\NasMedia:c:\media\nas
+  image: jjohnson33/windowsserver-qbittorrent:latest

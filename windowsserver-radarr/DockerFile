@@ -1,0 +1,20 @@
+FROM windowsserver-chocolatey
+
+LABEL Description="Radarr" Vendor="Radarr"
+LABEL maintainer="Chocolatey"
+
+EXPOSE 7878
+
+RUN powershell -Command \
+    Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
+    choco install radarr --ignore-checksums -y ; \
+    New-Item c:\ProgramData\RadarrConfig -type directory ; \
+    New-Item c:\media -type directory ;
+VOLUME c:\\ProgramData\\RadarrConfig c:\\media
+
+COPY bootstrap.ps1 /
+WORKDIR /ProgramData/Radarr
+ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
+
+# docker run --name radarr -d -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig -v e:\media:c:\media windowsserver-radarr
+# docker run --name radarr -it --entrypoint powershell.exe -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig -v e:\media:c:\media windowsserver-radarr

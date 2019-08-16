@@ -1,0 +1,19 @@
+FROM windowsserver-chocolatey
+
+LABEL Description="Jackett" Vendor="Jackett"
+LABEL maintainer="Chocolatey"
+
+EXPOSE 9117
+
+RUN powershell -Command \
+    Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
+    choco install jackett --ignore-checksums -y ; \
+    New-Item c:\ProgramData\JackettConfig -type directory ;
+VOLUME c:\\ProgramData\\JackettConfig
+
+COPY bootstrap.ps1 /
+WORKDIR /ProgramData/JackettConfig
+ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
+
+# docker run --name jackett -d -p 9117:9117 -v D:/DockerVolumes/AppFiles/jackett:C:/ProgramData/JackettConfig windowsserver-jackett
+# docker run --name jackett -it --entrypoint powershell.exe -p 9117:9117 -v D:/DockerVolumes/AppFiles/jackett:C:/ProgramData/JackettConfig windowsserver-jackett

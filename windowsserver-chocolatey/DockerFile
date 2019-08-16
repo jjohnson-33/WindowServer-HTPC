@@ -1,0 +1,10 @@
+#ARG windowsversion=ltsc2016
+ARG windowsversion=ltsc2019
+FROM mcr.microsoft.com/windows/servercore:$windowsversion
+
+
+ENV chocolateyUseWindowsCompression false
+
+RUN powershell -Command \
+    iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); \
+    choco feature disable --name showDownloadProgress

@@ -1,0 +1,23 @@
+FROM windowsserver-chocolatey
+
+ARG port=8080
+
+EXPOSE $port
+
+RUN powershell -Command \
+    Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
+    choco install qbittorrent --ignore-checksums -y \
+    New-Item C:\ProgramData\qBittorrent -force -type directory ; \
+    New-Item C:\ProgramData\qBittorrent\config -force -type directory ; \
+    New-Item C:\ProgramData\qBittorrent\downloads -force -type directory ;
+VOLUME C:\\ProgramData\\qBittorrent\\config C:\\ProgramData\\qBittorrent\\downloads
+
+COPY bootstrap.ps1 /
+COPY qbittorrent.ini /ProgramData/qBittorrent/
+WORKDIR /ProgramData/qBittorrent
+
+ENV qbittorrent_port=$port
+ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
+
+# docker run --name qbittorrent -d -p 8080:8080 -v D:/DockerVolumes/AppFiles/qbittorent/config:C:/ProgramData/qBittorrent/config -v D:/DockerVolumes/Downloads:C:/ProgramData/qBittorrent/downloads windowsserver-qbittorrent
+# docker run --name qbittorrent -it --entrypoint powershell.exe -p 8080:8080 -v D:/DockerVolumes/AppFiles/qbittorent/config:C:/ProgramData/qBittorrent/config -v D:/DockerVolumes/Downloads:C:/ProgramData/qBittorrent/downloads windowsserver-qbittorrent

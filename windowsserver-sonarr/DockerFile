@@ -1,0 +1,20 @@
+FROM windowsserver-chocolatey
+
+LABEL Description="Sonarr" Vendor="Sonarr"
+LABEL maintainer="Chocolatey"
+
+EXPOSE 8989
+
+RUN powershell -Command \
+    Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
+    choco install sonarr --ignore-checksums -y ; \
+    New-Item c:\media -type directory ; \
+    New-Item c:\ProgramData\SonarrConfig -type directory ;
+VOLUME c:\\ProgramData\\SonarrConfig c:\\media
+
+COPY bootstrap.ps1 /
+WORKDIR /ProgramData/NzbDrone
+ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
+
+# docker run --name sonarr -d -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig windowsserver-sonarr
+# docker run --name sonarr -it --entrypoint powershell.exe -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig windowsserver-sonarr
