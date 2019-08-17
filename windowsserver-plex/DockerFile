@@ -1,23 +1,32 @@
 FROM windows-chocolatey
 
-LABEL Description="Plex" Vendor="Plex"
-LABEL maintainer="Chocolatey"
-
-EXPOSE 32400 1900/udp 3005 5353/udp 8324 32410/udp 32412/udp 32413/udp 32414/udp 32469
-
 # escape=`
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
+RUN New-Item c:\media -type directory ; \
+    New-Item c:\downloads -type directory ; 
+
 RUN Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
-    choco install plexmediaserver --ignore-checksums -y ; \
-    New-Item c:\media -type directory ; \
-    New-Item c:\ProgramData\PlexConfig -type directory ;
-VOLUME c:\\ProgramData\\PlexConfig c:\\media
+    choco install plexmediaserver --ignore-checksums -y ;
+
+RUN New-Item c:\ProgramData\PlexConfig -type directory ;
 
 COPY bootstrap.ps1 /
-WORKDIR /ProgramData/PlexConfig
 ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
+
+#environment
+WORKDIR /ProgramData/PlexConfig
+ENV warmup_script=C:\\ProgramData\\PlexConfig\\warmup_script.ps1
+
+#metadata
+LABEL Description="Plex" Vendor="Plex"
+LABEL maintainer="Chocolatey"
+
+#externals
+EXPOSE 32400 1900/udp 3005 5353/udp 8324 32410/udp 32412/udp 32413/udp 32414/udp 32469
+VOLUME c:\\ProgramData\\PlexConfig c:\\media c:\\downloads
+
 
 # docker run --name plextest -d -p 32400:32400 -v D:/DockerVolumes/AppFiles/pms-docker/config:C:/ProgramData/PlexConfig windowsserver-plex
 # docker run --name plextest -it --entrypoint powershell.exe -p 32400:32400 -v D:/DockerVolumes/AppFiles/plex/config:C:/ProgramData/PlexConfig -v e:\media:c:\media\usb windowsserver-plex

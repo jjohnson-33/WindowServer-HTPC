@@ -1,20 +1,33 @@
 FROM windowsserver-chocolatey
 
-LABEL Description="Radarr" Vendor="Radarr"
-LABEL maintainer="Chocolatey"
-
-EXPOSE 7878
+RUN powershell -Command \
+    New-Item c:\media -type directory ; \
+    New-Item c:\downloads -type directory ;
 
 RUN powershell -Command \
     Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
-    choco install radarr --ignore-checksums -y ; \
-    New-Item c:\ProgramData\RadarrConfig -type directory ; \
-    New-Item c:\media -type directory ;
-VOLUME c:\\ProgramData\\RadarrConfig c:\\media
+    choco install radarr --ignore-checksums -y ;
+
+RUN powershell -Command \
+    Copy-Item c:\ProgramData\Radarr\bin\ c:\ -force -recurse ;\
+    Rename-Item c:\bin Radarr ;
 
 COPY bootstrap.ps1 /
-WORKDIR /ProgramData/Radarr
 ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
 
-# docker run --name radarr -d -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig -v e:\media:c:\media windowsserver-radarr
-# docker run --name radarr -it --entrypoint powershell.exe -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig -v e:\media:c:\media windowsserver-radarr
+#environment
+WORKDIR /ProgramData/Radarr
+ENV bootstrap_process=C:\\Radarr\\radarr.console.exe
+ENV warmup_script=C:\\ProgramData\\Radarr\\warmup_script.ps1
+
+#metadata
+LABEL Description="Radarr" Vendor="Radarr"
+LABEL maintainer="Chocolatey"
+
+#externals
+EXPOSE 7878
+VOLUME c:\\ProgramData\\Radarr c:\\media c:\\downloads
+
+
+# docker run --name radarr -d -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/Radarr -v e:\media:c:\media windowsserver-radarr
+# docker run --name radarr -it --entrypoint powershell.exe -p 7878:7878 -v D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/Radarr -v e:\media:c:\media windowsserver-radarr

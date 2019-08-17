@@ -62,9 +62,19 @@ function SetPlexRegistrySettingsForDocker()
     Set-RegistryKey $plexRegistryPath $property "String" $configPath
 }
 
+
 LoadMachineKeyFromVolume #Load the machine key backup if it exists
 SetPlexRegistrySettingsForDocker #set the path for data files
 SaveMachineKeyToVolume #Save the machine key backup if it doesnt exist, and we have a valid machine key
+
+#read the environment
+$warmupScript = $env:warmup_script
+
+#warmup
+if ($warmupScript -and (Test-Path $warmupScript))
+{
+    & $warmupScript
+}
 
 $app = "C:\Program Files (x86)\Plex\Plex Media Server\Plex Media Server.exe"
 Start-Process -FilePath $app -NoNewWindow
@@ -80,3 +90,4 @@ while ($true) {
         Exit
     }
 }
+

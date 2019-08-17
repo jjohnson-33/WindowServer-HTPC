@@ -1,20 +1,32 @@
 FROM windowsserver-chocolatey
 
-LABEL Description="Sonarr" Vendor="Sonarr"
-LABEL maintainer="Chocolatey"
-
-EXPOSE 8989
+RUN powershell -Command \
+    New-Item c:\media -type directory ; \
+    New-Item c:\downloads -type directory ;
 
 RUN powershell -Command \
     Set-Variable -Name 'ErrorActionPreference' -Value 'Stop'; \
-    choco install sonarr --ignore-checksums -y ; \
-    New-Item c:\media -type directory ; \
-    New-Item c:\ProgramData\SonarrConfig -type directory ;
-VOLUME c:\\ProgramData\\SonarrConfig c:\\media
+    choco install sonarr --ignore-checksums -y ;
+
+RUN powershell -Command \
+    Copy-Item c:\ProgramData\NzbDrone\bin\ c:\ -force -recurse ;\
+    Rename-Item c:\bin Sonarr ;
 
 COPY bootstrap.ps1 /
-WORKDIR /ProgramData/NzbDrone
 ENTRYPOINT ["powershell", "-ExecutionPolicy", "Unrestricted", "c:\\bootstrap.ps1"]
 
-# docker run --name sonarr -d -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig windowsserver-sonarr
-# docker run --name sonarr -it --entrypoint powershell.exe -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig windowsserver-sonarr
+#environment
+WORKDIR /ProgramData/NzbDrone
+ENV bootstrap_process=C:\\Sonarr\\NzbDrone.console.exe
+ENV warmup_script=C:\\ProgramData\\NzbDrone\\warmup_script.ps1
+
+#metadata
+LABEL Description="Sonarr" Vendor="Sonarr"
+LABEL maintainer="Chocolatey"
+
+#externals
+EXPOSE 8989
+VOLUME c:\\ProgramData\\NzbDrone c:\\media c:\\downloads
+
+# docker run --name sonarr -d -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/NzbDrone windowsserver-sonarr
+# docker run --name sonarr -it --entrypoint powershell.exe -p 8989:8989 -v D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/NzbDrone windowsserver-sonarr

@@ -17,7 +17,7 @@ services:
   volumes:
    - D:/DockerVolumes/AppFiles/plex/config:C:/ProgramData/PlexConfig
    - e:/media:c:/media/usb
-   - D:/DockerVolumes/NasHost:c:/media/nashost
+   - D:/DockerVolumes/NasMedia:c:/media/nas
   image: jjohnson33/windowsserver-plex:latest
 
  radarr:
@@ -26,8 +26,9 @@ services:
   ports:
    - 7878:7878
   volumes:
-   - D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/Radarr
+   - D:/DockerVolumes/AppFiles/radarr:C:/ProgramData/RadarrConfig
    - e:/media:c:/media/usb
+   - D:/DockerVolumes/NasMedia:c:/media/nas
    - D:/DockerVolumes/Downloads:C:/downloads
   image: jjohnson33/windowsserver-radarr:latest
 
@@ -37,8 +38,9 @@ services:
   ports:
    - 8989:8989
   volumes:
-   - D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/NzbDrone
+   - D:/DockerVolumes/AppFiles/sonarr:C:/ProgramData/SonarrConfig
    - e:/media:c:/media/usb
+   - D:/DockerVolumes/NasMedia:c:/media/nas
    - D:/DockerVolumes/Downloads:C:/downloads
   image: jjohnson33/windowsserver-sonarr:latest
  
@@ -58,5 +60,7 @@ services:
    - 8080:8080
   volumes:
    - D:/DockerVolumes/AppFiles/qbittorent/config:C:/ProgramData/qBittorrent/config
-   - D:/DockerVolumes/Downloads:C:/downloads
+   - D:/DockerVolumes/Downloads:C:/ProgramData/qBittorrent/downloads
+   - e:/media:c:/media/usb
+   - D:/DockerVolumes/NasMedia:c:/media/nas
   image: jjohnson33/windowsserver-qbittorrent:latest
